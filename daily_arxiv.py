@@ -51,6 +51,10 @@ def get_daily_papers(topic, query, max_results=2):
 
     for result in search_engine.results():
 
+        # 这里加个判断 作为过滤
+        if 'cs.CV' in result.categories:
+            continue
+
         paper_id = result.get_short_id()
         paper_title = result.title
         paper_url = result.entry_id
@@ -205,10 +209,10 @@ def json_to_md(filename, md_filename,
 
             if use_title == True:
                 if to_web == False:
-                    f.write("|Publish Date|Title|Categories|Abstract|PDF|Code|\n" + "|---|---|---|---|---|\n")
+                    f.write("|Publish Date|Title|Categories|Abstract|PDF|Code|\n" + "|---|---|---|---|---|---|\n")
                 else:
                     f.write("| Publish Date | Title |Categories| Abstract | PDF | Code |\n")
-                    f.write("|:---------|:-----------------------|:------|:---------|:------|:------|\n")
+                    f.write("|:---------|:------------------|:------|:-----------------|:------|:------|\n")
 
             # sort papers by date
             day_content = sort_papers(day_content)
@@ -256,7 +260,10 @@ if __name__ == "__main__":
         # topic = keyword.replace("\"","")
         print("Keyword: " + topic)
 
-        data, data_web = get_daily_papers(topic, query=keyword, max_results=100)
+        # data 就是md格式
+        # web 就是json格式
+        # 这里调用 搜索函数，返回一个topic或者一个keyword符合条件的所有函数
+        data, data_web = get_daily_papers(topic, query=keyword, max_results=10)
         data_collector.append(data)
         data_collector_web.append(data_web)
 
