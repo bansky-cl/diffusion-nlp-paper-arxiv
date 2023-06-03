@@ -18,6 +18,15 @@ def get_authors(authors, first_author=False):
     return output
 
 
+def get_label(categories):
+    output = str()
+    if len(categories) != 1:  # 多类
+        output = ", ".join(str(c) for c in categories)
+    else:
+        output = categories[0]
+    return output
+
+
 def sort_papers(papers):
     output = dict()
     keys = list(papers.keys())
@@ -52,7 +61,7 @@ def get_daily_papers(topic, query, max_results=2):
     for result in search_engine.results():
 
         # 这里加个判断 作为过滤
-        if 'cs.CV' in result.categories:
+        if 'cs.CL' not in result.categories:
             continue
 
         paper_id = result.get_short_id()
@@ -60,8 +69,8 @@ def get_daily_papers(topic, query, max_results=2):
         paper_url = result.entry_id
         # new 2
 
-        paper_categories = result.categories  # 标签列表
-        paper_primary_category = result.primary_category  # 主分类要排除cs.CV
+        paper_categories = get_label(result.categories)  # 标签列表
+        paper_primary_category = result.primary_category  # 主分类
 
         code_url = base_url + paper_id
         paper_abstract = result.summary.replace("\n", " ")  # 这个要用上
@@ -263,7 +272,7 @@ if __name__ == "__main__":
         # data 就是md格式
         # web 就是json格式
         # 这里调用 搜索函数，返回一个topic或者一个keyword符合条件的所有函数
-        data, data_web = get_daily_papers(topic, query=keyword, max_results=10)
+        data, data_web = get_daily_papers(topic, query=keyword, max_results=100)
         data_collector.append(data)
         data_collector_web.append(data_web)
 
