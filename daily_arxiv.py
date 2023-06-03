@@ -54,18 +54,26 @@ def get_daily_papers(topic, query, max_results=2):
         paper_id = result.get_short_id()
         paper_title = result.title
         paper_url = result.entry_id
+        # new 2
+
+        paper_categories = result.categories  # 标签列表
+        paper_primary_category = result.primary_category  # 主分类要排除cs.CV
+
         code_url = base_url + paper_id
-        paper_abstract = result.summary.replace("\n", " ")
-        paper_authors = get_authors(result.authors)
-        paper_first_author = paper_authors  # get_authors(result.authors,first_author = True)
+        paper_abstract = result.summary.replace("\n", " ")  # 这个要用上
+        paper_authors = get_authors(result.authors)  # 作者列表
+        paper_first_author = paper_authors  # get_authors(result.authors,first_author = True) # 一作
         primary_category = result.primary_category
         publish_time = result.published.date()
-        update_time = result.updated.date()
+        update_time = result.updated.date()  # 要更新日期
         comments = result.comment
 
         print("Time = ", update_time,
               " title = ", paper_title,
-              " author = ", paper_first_author)
+              # " author = ", paper_first_author
+              "abstract =", paper_abstract,
+              "categories =", paper_categories
+              )
 
         # eg: 2108.09112v1 -> 2108.09112
         ver_pos = paper_id.find('v')
@@ -80,16 +88,17 @@ def get_daily_papers(topic, query, max_results=2):
             if "official" in r and r["official"]:
                 cnt += 1
                 repo_url = r["official"]["url"]
+                # 这里修改 paper_first_author to paper_abstract
                 content[
-                    paper_key] = f"|**{update_time}**|**{paper_title}**|{paper_first_author} et.al.|[{paper_id}]({paper_url})|**[link]({repo_url})**|\n"
+                    paper_key] = f"|**{update_time}**|**{paper_title}**|{paper_categories}|{paper_abstract} |[{paper_id}]({paper_url})|**[link]({repo_url})**|\n"
                 content_to_web[
-                    paper_key] = f"- {update_time}, **{paper_title}**, {paper_first_author} et.al., Paper: [{paper_url}]({paper_url}), Code: **[{repo_url}]({repo_url})**"
+                    paper_key] = f"- {update_time}, **{paper_title}**,{paper_categories}, {paper_abstract} , Paper: [{paper_url}]({paper_url}), Code: **[{repo_url}]({repo_url})**"
 
             else:
                 content[
-                    paper_key] = f"|**{update_time}**|**{paper_title}**|{paper_first_author} et.al.|[{paper_id}]({paper_url})|null|\n"
+                    paper_key] = f"|**{update_time}**|**{paper_title}**|{paper_categories}|{paper_abstract} |[{paper_id}]({paper_url})|null|\n"
                 content_to_web[
-                    paper_key] = f"- {update_time}, **{paper_title}**, {paper_first_author} et.al., Paper: [{paper_url}]({paper_url})"
+                    paper_key] = f"- {update_time}, **{paper_title}**,{paper_categories}, {paper_abstract} , Paper: [{paper_url}]({paper_url})"
 
             # TODO: select useful comments
             comments = None
@@ -196,10 +205,10 @@ def json_to_md(filename, md_filename,
 
             if use_title == True:
                 if to_web == False:
-                    f.write("|Publish Date|Title|Authors|PDF|Code|\n" + "|---|---|---|---|---|\n")
+                    f.write("|Publish Date|Title|Categories|Abstract|PDF|Code|\n" + "|---|---|---|---|---|\n")
                 else:
-                    f.write("| Publish Date | Title | Authors | PDF | Code |\n")
-                    f.write("|:---------|:-----------------------|:---------|:------|:------|\n")
+                    f.write("| Publish Date | Title |Categories| Abstract | PDF | Code |\n")
+                    f.write("|:---------|:-----------------------|:------|:---------|:------|:------|\n")
 
             # sort papers by date
             day_content = sort_papers(day_content)
@@ -268,4 +277,3 @@ if __name__ == "__main__":
     update_json_file(json_file, data_collector)
     # json data to markdown
     json_to_md(json_file, md_file, to_web=True)
-
