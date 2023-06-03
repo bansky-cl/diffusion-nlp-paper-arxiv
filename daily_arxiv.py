@@ -219,9 +219,9 @@ def json_to_md(filename, md_filename,
 
             if use_title == True:
                 if to_web == False:
-                    f.write("|Publish Date|Title|label|Abstract|PDF|Code|\n" + "|---|---|---|---|---|---|\n")
+                    f.write("|Date|Title|label|Abstract|PDF|Code|\n" + "|---|---|---|---|---|---|\n")
                 else:
-                    f.write("| Publish Date | Title | label | Abstract | PDF | Code |\n")
+                    f.write("| Date | Title | label | Abstract | PDF | Code |\n")
                     f.write("|:---------|:---------------|:-------|:------------------|:------|:------|\n")
 
             # sort papers by date
@@ -263,8 +263,8 @@ if __name__ == "__main__":
 
     # my keyword
     keywords = dict()
-    keywords["diffusion"] = "ti:\"diffusion\"" + "OR" + "ti:\"text diffusion\""
-    keywords["text generation"] = "ti:text generation"
+    keywords["diffusion"] = "ti:\"diffusion\"" + "OR" + "ti:\"text diffusion\"" + "OR" + "ti:\" diffuse\""
+    # keywords["text generation"] = "ti:text generation"
 
     for topic, keyword in keywords.items():
         # topic = keyword.replace("\"","")
