@@ -61,7 +61,8 @@ def get_daily_papers(topic, query, max_results=2):
     for result in search_engine.results():
 
         # 这里加个判断 作为过滤
-        if 'cs.CL' not in result.categories:
+
+        if 'cs.CL' not in result.categories or 'cs.CV' in result.categories:
             continue
 
         paper_id = result.get_short_id()
@@ -220,8 +221,8 @@ def json_to_md(filename, md_filename,
                 if to_web == False:
                     f.write("|Publish Date|Title|Categories|Abstract|PDF|Code|\n" + "|---|---|---|---|---|---|\n")
                 else:
-                    f.write("| Publish Date | Title |Categories| Abstract | PDF | Code |\n")
-                    f.write("|:---------|:------------------|:------|:-----------------|:------|:------|\n")
+                    f.write("| Publish Date | Title |label| Abstract | PDF | Code |\n")
+                    f.write("|:---------|:---------------|:-------|:------------------|:------|:------|\n")
 
             # sort papers by date
             day_content = sort_papers(day_content)
