@@ -1,0 +1,12 @@
+title: Diffusion in NLP Arxiv Daily
+description: Automatically Update Papers Daily using Github Actions (Update Every 8th hours)
+show_downloads: true
+#theme: jekyll-theme-slate
+
+remote_theme: pages-themes/slate@v0.2.0
+plugins:
+- jekyll-remote-theme 
+
+github:
+  zip_url: https://github.com/bansky-cl/diffusion-nlp-paper-arxiv
+  another_url: https://github.com/bansky-cl/diffusion-nlp-paper-arxiv
