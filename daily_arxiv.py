@@ -219,9 +219,9 @@ def json_to_md(filename, md_filename,
 
             if use_title == True:
                 if to_web == False:
-                    f.write("|Publish Date|Title|Categories|Abstract|PDF|Code|\n" + "|---|---|---|---|---|---|\n")
+                    f.write("|Publish Date|Title|Label|Abstract|PDF|Code|\n" + "|---|---|---|---|---|---|\n")
                 else:
-                    f.write("| Publish Date | Title |label| Abstract | PDF | Code |\n")
+                    f.write("| Publish Date | Title | Label | Abstract | PDF | Code |\n")
                     f.write("|:---------|:---------------|:-------|:------------------|:------|:------|\n")
 
             # sort papers by date
