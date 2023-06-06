@@ -264,7 +264,6 @@ if __name__ == "__main__":
     # my keyword
     keywords = dict()
     keywords["diffusion"] = "ti:\"diffusion\"" + "OR" + "ti:\"text diffusion\"" + "OR" + "ti:\" diffuse\""
-    keywords["topic model"] = "ti:topic model"
 
     for topic, keyword in keywords.items():
         # topic = keyword.replace("\"","")
