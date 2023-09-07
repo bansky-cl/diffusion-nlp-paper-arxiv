@@ -35,7 +35,7 @@ jobs:
       - name: Set up Python Env
         uses: actions/setup-python@v1
         with:
-          python-version: 3.11.4
+          python-version: 3.11.5
 
       - name: Install dependencies
         run: |
