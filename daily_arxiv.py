@@ -62,7 +62,7 @@ def get_daily_papers(topic, query, max_results=2):
 
         # 这里加个判断 作为过滤
 
-        if 'cs.CL' not in result.categories or 'cs.CV' in result.categories:
+        if 'cs.CL' not in result.categories or 'cs.CV' in result.categories or 'eess.AS' in result.categories or 'cs.SD' in result.categories or 'eess.SP' in result.categories:
             continue
 
         paper_id = result.get_short_id()
