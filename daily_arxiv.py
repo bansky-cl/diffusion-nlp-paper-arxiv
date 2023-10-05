@@ -198,9 +198,9 @@ def json_to_md(filename, md_filename,
 
         # Add: table of contents
         if use_tc == True:
-            f.write("<details>\n")
-            f.write("  <summary>Table of Contents</summary>\n")
-            f.write("  <ol>\n")
+            # f.write("<details>\n")
+            # f.write("  <summary>Table of Contents</summary>\n")
+            # f.write("  <ol>\n")
             for keyword in data.keys():
                 day_content = data[keyword]
                 if not day_content:
