@@ -286,10 +286,10 @@ if __name__ == "__main__":
     # json data to markdown
     json_to_md(json_file, md_file)
 
-    # 2. update docs/index.md file
-    json_file = "./docs/arxiv-daily-web.json"
-    md_file = "./docs/index.md"
+    # 2. update docs/index.md file . no use actually
+    # json_file = "./docs/arxiv-daily-web.json"
+    # md_file = "./docs/index.md"
     # update json data
-    update_json_file(json_file, data_collector)
+    # update_json_file(json_file, data_collector)
     # json data to markdown
-    json_to_md(json_file, md_file, to_web=True)
+    # json_to_md(json_file, md_file, to_web=True)
