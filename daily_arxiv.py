@@ -150,7 +150,7 @@ def update_json_file(filename, data_all):
                 json_data[keyword] = papers
 
     with open(filename, "w") as f:
-        json.dump(json_data, f)
+        json.dump(json_data, f, indent=2)
 
 
 def json_to_md(filename, md_filename,
