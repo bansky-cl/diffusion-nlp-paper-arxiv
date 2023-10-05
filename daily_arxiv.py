@@ -135,7 +135,7 @@ def update_json_file(filename, data_all):
         if len(content.strip()) < 2:
             m = {}
         else:
-            m = json.loads(content)
+            m = json.loads(content, indent=2)
 
     json_data = m.copy()
 
