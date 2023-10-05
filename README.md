@@ -5,10 +5,6 @@
 
 ## Updated on 2023.10.05
 
-    <li><a href=#diffusion>diffusion</a></li>
-  </ol>
-</details>
-
 ## diffusion
 
 |Date|Title|label|Abstract|PDF|Code|
