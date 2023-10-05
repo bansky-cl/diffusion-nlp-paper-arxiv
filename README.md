@@ -5,9 +5,6 @@
 
 ## Updated on 2023.10.05
 
-<details>
-  <summary>Table of Contents</summary>
-  <ol>
     <li><a href=#diffusion>diffusion</a></li>
   </ol>
 </details>
