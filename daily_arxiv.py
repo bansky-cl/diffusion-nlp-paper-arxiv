@@ -196,19 +196,19 @@ def json_to_md(filename, md_filename,
         else:
             f.write("> Updated on " + DateNow + "\n\n")
 
-        # Add: table of contents
-        if use_tc == True:
-            # f.write("<details>\n")
-            # f.write("  <summary>Table of Contents</summary>\n")
-            # f.write("  <ol>\n")
-            for keyword in data.keys():
-                day_content = data[keyword]
-                if not day_content:
-                    continue
-                kw = keyword.replace(' ', '-')
-                f.write(f"    <li><a href=#{kw}>{keyword}</a></li>\n")
-            f.write("  </ol>\n")
-            f.write("</details>\n\n")
+        # Add: table of contents , no use it
+        # if use_tc == True:
+        #     # f.write("<details>\n")
+        #     # f.write("  <summary>Table of Contents</summary>\n")
+        #     # f.write("  <ol>\n")
+        #     for keyword in data.keys():
+        #         day_content = data[keyword]
+        #         if not day_content:
+        #             continue
+        #         kw = keyword.replace(' ', '-')
+        #         f.write(f"    <li><a href=#{kw}>{keyword}</a></li>\n")
+        #     f.write("  </ol>\n")
+        #     f.write("</details>\n\n")
 
         for keyword in data.keys():
             day_content = data[keyword]
