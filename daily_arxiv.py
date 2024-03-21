@@ -45,7 +45,7 @@ def get_daily_papers(topic, query, max_results=2):
 
     # output 
     content = dict()
-    content_to_web = dict()
+    # content_to_web = dict()
 
     # content
     output = dict()
@@ -62,7 +62,7 @@ def get_daily_papers(topic, query, max_results=2):
 
         # 这里加个判断 作为过滤
 
-        if 'cs.CL' not in result.categories or 'cs.CV' in result.categories or 'eess.AS' in result.categories or 'cs.SD' in result.categories or 'eess.SP' in result.categories:
+        if 'cs.CL' not in result.categories or 'cs.CV' in result.categories or 'eess.AS' in result.categories or 'cs.SD' in result.categories or 'eess.SP' in result.categories or 'q-bio.BM' in result.categories:
             continue
 
         paper_id = result.get_short_id()
@@ -105,31 +105,31 @@ def get_daily_papers(topic, query, max_results=2):
                 # 这里修改 paper_first_author to paper_abstract
                 content[
                     paper_key] = f"|**{update_time}**|**{paper_title}**|{paper_categories}|{paper_abstract} |[{paper_id}]({paper_url})|**[link]({repo_url})**|\n"
-                content_to_web[
-                    paper_key] = f"- {update_time}, **{paper_title}**,{paper_categories}, {paper_abstract} , Paper: [{paper_url}]({paper_url}), Code: **[{repo_url}]({repo_url})**"
+                # content_to_web[
+                #     paper_key] = f"- {update_time}, **{paper_title}**,{paper_categories}, {paper_abstract} , Paper: [{paper_url}]({paper_url}), Code: **[{repo_url}]({repo_url})**"
 
             else:
                 content[
                     paper_key] = f"|**{update_time}**|**{paper_title}**|{paper_categories}|{paper_abstract} |[{paper_id}]({paper_url})|null|\n"
-                content_to_web[
-                    paper_key] = f"- {update_time}, **{paper_title}**,{paper_categories}, {paper_abstract} , Paper: [{paper_url}]({paper_url})"
+                # content_to_web[
+                #     paper_key] = f"- {update_time}, **{paper_title}**,{paper_categories}, {paper_abstract} , Paper: [{paper_url}]({paper_url})"
 
             # TODO: select useful comments
-            comments = None
-            if comments != None:
-                content_to_web[paper_key] = content_to_web[paper_key] + f", {comments}\n"
-            else:
-                content_to_web[paper_key] = content_to_web[paper_key] + f"\n"
+            # comments = None
+            # if comments != None:
+            #     content_to_web[paper_key] = content_to_web[paper_key] + f", {comments}\n"
+            # else:
+            #     content_to_web[paper_key] = content_to_web[paper_key] + f"\n"
 
         except Exception as e:
             print(f"exception: {e} with id: {paper_key}")
 
-    data = {topic: content}
-    data_web = {topic: content_to_web}
-    return data, data_web
+    data = {topic: content} # return crwal articles
+    # data_web = {topic: content_to_web}
+    return data
 
 
-def update_json_file(filename, data_all):
+def update_json_file(filename, filename_new, data_all):
     with open(filename, "r") as f:
         content = f.read()
         if len(content.strip()) < 2:
@@ -137,19 +137,19 @@ def update_json_file(filename, data_all):
         else:
             m = json.loads(content)
 
-    json_data = m.copy()
+    json_data = m.copy() # original articles
 
     # update papers in each keywords         
     for data in data_all:
-        for keyword in data.keys():
+        for keyword in data.keys(): # one keyword 
             papers = data[keyword]
 
-            if keyword in json_data.keys():
+            if keyword in json_data.keys(): # update
                 json_data[keyword].update(papers)
             else:
                 json_data[keyword] = papers
 
-    with open(filename, "w") as f:
+    with open(filename_new, "w") as f: # new file to save updated articles
         json.dump(json_data, f, indent=2)
 
 
@@ -262,7 +262,7 @@ def json_to_md(filename, md_filename,
 if __name__ == "__main__":
 
     data_collector = []
-    data_collector_web = []
+    # data_collector_web = []
 
     # my keyword
     keywords = dict()
@@ -275,17 +275,18 @@ if __name__ == "__main__":
         # data 就是md格式
         # web 就是json格式
         # 这里调用 搜索函数，返回一个topic或者一个keyword符合条件的所有函数
-        data, data_web = get_daily_papers(topic, query=keyword, max_results=100)
+        data = get_daily_papers(topic, query=keyword, max_results=100)
         data_collector.append(data)
-        data_collector_web.append(data_web)
+        # data_collector_web.append(data_web) # no use
 
         print("\n")
 
     # 1. update README.md file
     json_file = "docs/arxiv-daily.json"
     md_file = "README.md"
+    new_json_file = "docs/arxiv-daily-new.json"
     # update json data
-    update_json_file(json_file, data_collector)
+    update_json_file(json_file, new_json_file, data_collector) # save new json
     # json data to markdown
     json_to_md(json_file, md_file)
 
