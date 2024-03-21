@@ -287,8 +287,8 @@ if __name__ == "__main__":
     new_json_file = "docs/arxiv-daily-new.json"
     # update json data
     update_json_file(json_file, new_json_file, data_collector) # save new json
-    # json data to markdown
-    json_to_md(json_file, md_file)
+    # new json data to markdown
+    json_to_md(new_json_file, md_file)
 
     # 2. update docs/index.md file . no use actually
     # json_file = "./docs/arxiv-daily-web.json"
