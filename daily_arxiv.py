@@ -1,4 +1,3 @@
-@@ -1,299 +0,0 @@
 import datetime
 import requests
 import json
