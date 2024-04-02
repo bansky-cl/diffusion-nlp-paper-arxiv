@@ -3,7 +3,7 @@
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 
-For more carefully curated articles, you can refer to this [repository](https://github.com/bansky-cl/DiffusionInNlp_PaperList).
+For more carefully curated articles, you can refer to this [repository](https://github.com/bansky-cl/Diffusion_NLP_Papers).
 
 ## Updated on 2024.04.02
 
