@@ -192,7 +192,7 @@ def json_to_md(filename, md_filename,
             f.write(f"[![Issues][issues-shield]][issues-url]\n\n")
 
         # add another code repository link
-        f.write("For more carefully curated articles, you can refer to this [repository](https://github.com/bansky-cl/DiffusionInNlp_PaperList).\n\n")
+        f.write("For more carefully curated articles, you can refer to this [repository](https://github.com/bansky-cl/Diffusion_NLP_Papers).\n\n")
 
         if use_title == True:
             f.write("## Updated on " + DateNow + "\n\n")
