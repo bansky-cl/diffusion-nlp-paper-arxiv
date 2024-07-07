@@ -53,7 +53,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "Github Action Automatic Update Diffusion NLP Arxiv Papers"
-          files: README.md docs/arxiv-daily.json docs/arxiv-daily-new.json
+          files: README.md docs/arxiv-daily.json
           rebase: 'true'
           name: ${{ env.GITHUB_USER_NAME }}
           email: ${{ env.GITHUB_USER_EMAIL }}
