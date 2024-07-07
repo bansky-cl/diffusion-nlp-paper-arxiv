@@ -75,8 +75,8 @@ def get_daily_papers(topic, query, max_results=2):
 
         code_url = base_url + paper_id
         paper_abstract = result.summary.replace("\n", " ")  # 这个要用上
-        paper_authors = get_authors(result.authors)  # 作者列表
-        paper_first_author = paper_authors  # get_authors(result.authors,first_author = True) # 一作
+        # paper_authors = get_authors(result.authors)  # 作者列表
+        # paper_first_author = paper_authors  # get_authors(result.authors,first_author = True) # 一作
         primary_category = result.primary_category
         publish_time = result.published.date()
         update_time = result.updated.date()  # 要更新日期
@@ -105,31 +105,18 @@ def get_daily_papers(topic, query, max_results=2):
                 # 这里修改 paper_first_author to paper_abstract
                 content[
                     paper_key] = f"|**{update_time}**|**{paper_title}**|{paper_categories}|{paper_abstract} |[{paper_id}]({paper_url})|**[link]({repo_url})**|\n"
-                # content_to_web[
-                #     paper_key] = f"- {update_time}, **{paper_title}**,{paper_categories}, {paper_abstract} , Paper: [{paper_url}]({paper_url}), Code: **[{repo_url}]({repo_url})**"
-
             else:
                 content[
                     paper_key] = f"|**{update_time}**|**{paper_title}**|{paper_categories}|{paper_abstract} |[{paper_id}]({paper_url})|null|\n"
-                # content_to_web[
-                #     paper_key] = f"- {update_time}, **{paper_title}**,{paper_categories}, {paper_abstract} , Paper: [{paper_url}]({paper_url})"
-
-            # TODO: select useful comments
-            # comments = None
-            # if comments != None:
-            #     content_to_web[paper_key] = content_to_web[paper_key] + f", {comments}\n"
-            # else:
-            #     content_to_web[paper_key] = content_to_web[paper_key] + f"\n"
 
         except Exception as e:
             print(f"exception: {e} with id: {paper_key}")
 
     data = {topic: content} # return crwal articles
-    # data_web = {topic: content_to_web}
     return data
 
 
-def update_json_file(filename, filename_new, data_all):
+def update_json_file(filename, data_all):
     with open(filename, "r") as f:
         content = f.read()
         if len(content.strip()) < 2:
@@ -149,7 +136,7 @@ def update_json_file(filename, filename_new, data_all):
             else:
                 json_data[keyword] = papers
 
-    with open(filename_new, "w") as f: # new file to save updated articles
+    with open(filename, "w") as f: # new file to save updated articles
         json.dump(json_data, f, indent=2)
 
 
@@ -198,20 +185,6 @@ def json_to_md(filename, md_filename,
             f.write("## Updated on " + DateNow + "\n\n")
         else:
             f.write("> Updated on " + DateNow + "\n\n")
-
-        # Add: table of contents , no use it
-        # if use_tc == True:
-        #     # f.write("<details>\n")
-        #     # f.write("  <summary>Table of Contents</summary>\n")
-        #     # f.write("  <ol>\n")
-        #     for keyword in data.keys():
-        #         day_content = data[keyword]
-        #         if not day_content:
-        #             continue
-        #         kw = keyword.replace(' ', '-')
-        #         f.write(f"    <li><a href=#{kw}>{keyword}</a></li>\n")
-        #     f.write("  </ol>\n")
-        #     f.write("</details>\n\n")
 
         for keyword in data.keys():
             day_content = data[keyword]
@@ -262,11 +235,10 @@ def json_to_md(filename, md_filename,
 if __name__ == "__main__":
 
     data_collector = []
-    # data_collector_web = []
 
     # my keyword
     keywords = dict()
-    keywords["diffusion"] = "ti:\"diffusion\"" + "OR" + "ti:\"text diffusion\"" + "OR" + "ti:\" diffuse\""
+    keywords["diffusion"] = "ti:\"diffusion\""  + "OR" + "ti:\" diffus\""
 
     for topic, keyword in keywords.items():
         # topic = keyword.replace("\"","")
@@ -275,25 +247,14 @@ if __name__ == "__main__":
         # data 就是md格式
         # web 就是json格式
         # 这里调用 搜索函数，返回一个topic或者一个keyword符合条件的所有函数
-        data = get_daily_papers(topic, query=keyword, max_results=100)
+        data = get_daily_papers(topic, query=keyword, max_results=200)
         data_collector.append(data)
         # data_collector_web.append(data_web) # no use
 
         print("\n")
 
-    # 1. update README.md file
     json_file = "docs/arxiv-daily.json"
     md_file = "README.md"
-    new_json_file = "docs/arxiv-daily-new.json"
-    # update json data
-    update_json_file(json_file, new_json_file, data_collector) # save new json
-    # new json data to markdown
-    json_to_md(new_json_file, md_file)
 
-    # 2. update docs/index.md file . no use actually
-    # json_file = "./docs/arxiv-daily-web.json"
-    # md_file = "./docs/index.md"
-    # update json data
-    # update_json_file(json_file, data_collector)
-    # json data to markdown
-    # json_to_md(json_file, md_file, to_web=True)
+    update_json_file(json_file, data_collector)
+    json_to_md(new_json_file, md_file)
