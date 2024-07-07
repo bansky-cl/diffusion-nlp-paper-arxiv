@@ -257,4 +257,4 @@ if __name__ == "__main__":
     md_file = "README.md"
 
     update_json_file(json_file, data_collector)
-    json_to_md(new_json_file, md_file)
+    json_to_md(json_file, md_file)
