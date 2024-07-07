@@ -247,7 +247,7 @@ if __name__ == "__main__":
         # data 就是md格式
         # web 就是json格式
         # 这里调用 搜索函数，返回一个topic或者一个keyword符合条件的所有函数
-        data = get_daily_papers(topic, query=keyword, max_results=500)
+        data = get_daily_papers(topic, query=keyword, max_results=1000)
         data_collector.append(data)
         # data_collector_web.append(data_web) # no use
 
