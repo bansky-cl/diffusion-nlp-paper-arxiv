@@ -43,6 +43,16 @@ def sort_papers(papers):
         output[key] = papers[key]
     return output
 
+def iter_results_safe(client, search):
+    gen = client.results(search)
+    while True:
+        try:
+            yield next(gen)
+        except UnexpectedEmptyPageError as e:
+            print(f"[arXiv] empty page, stop paging: {e}")
+            break
+        except StopIteration:
+            break
 
 def get_daily_papers(topic, query, max_results=200):
     """
@@ -64,7 +74,7 @@ def get_daily_papers(topic, query, max_results=200):
     )
 
     # 2. 逐条遍历结果
-    for res in client.results(search):
+    for res in iter_results_safe(client, search):
 
         cats = res.categories                 # e.g. ['cs.CL', 'cs.LG']
         if (KEEP not in cats) or any(c in cats for c in BLOCKS):
@@ -233,7 +243,7 @@ if __name__ == "__main__":
         # data 就是md格式
         # web 就是json格式
         # 这里调用 搜索函数，返回一个topic或者一个keyword符合条件的所有函数
-        data = get_daily_papers(topic, query=keyword, max_results=1000)
+        data = get_daily_papers(topic, query=keyword, max_results=200)
         data_collector.append(data)
         # data_collector_web.append(data_web) # no use
 
