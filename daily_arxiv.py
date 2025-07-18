@@ -120,13 +120,24 @@ def make_collapsible(text: str, title: str = "Full Abstract") -> str:
     return f"<details><summary>{title}</summary>{text}</details>"
 
 def wrap_old_row(md_row: str) -> str:
+    # 已经有 <details> 就跳过
     if "<details" in md_row:
         return md_row
-    cells = md_row.strip().split("|")
-    if len(cells) < 7:
+
+    # 记录行尾是否带 '\n'
+    newline = "\n" if md_row.endswith("\n") else ""
+    row = md_row.rstrip("\n")  # 去掉行尾换行再处理
+
+    # 用 split 保留首尾空串：'' , Date , Title , ... , ''  (共 7+2 节点)
+    cells = row.split("|")
+    if len(cells) < 8:         # 不够 8 说明行格式本身就异常
         return md_row
+
+    # 第 4 格 = 摘要
     cells[4] = make_collapsible(cells[4].strip())
-    return "|".join(cells)
+
+    # 重新组装，记得把首尾空格、换行补回去
+    return "|".join(cells) + newline
 
 def update_json_file(filename, data_all):
     with open(filename, "r") as f:
