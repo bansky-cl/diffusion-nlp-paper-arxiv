@@ -220,9 +220,14 @@ def json_to_md(filename, md_filename,
             # sort papers by date
             day_content = sort_papers(day_content)
 
+            # for _, v in day_content.items():
+            #     if v is not None:
+            #         f.write(v)
             for _, v in day_content.items():
-                if v is not None:
-                    f.write(v)
+                if not v:          # 跳过空值
+                    continue
+                # 去掉可能已有的行尾换行，再补一个
+                f.write(v.rstrip("\n") + "\n")
 
             f.write(f"\n")
 
