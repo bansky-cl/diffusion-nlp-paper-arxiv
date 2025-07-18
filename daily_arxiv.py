@@ -87,6 +87,7 @@ def get_daily_papers(topic, query, max_results=200):
         paper_title    = res.title
         paper_url      = res.entry_id
         paper_abstract = res.summary.replace("\n", " ")
+        collapsed_abs = make_collapsible(paper_abstract)       # ← 折叠后的摘要
         paper_labels   = ", ".join(cats)
 
         # ---- PapersWithCode 源码链接 ----
@@ -100,17 +101,23 @@ def get_daily_papers(topic, query, max_results=200):
 
         # ---- 拼 markdown 行 ----
         md_row = (
-            f"|**{update_time}**|**{paper_title}**|{paper_labels}|"
-            f"{paper_abstract}|[{paper_id_full}]({paper_url})|"
+            f"| **{update_time}** | **{paper_title}** | {paper_labels} | "
+            f"{collapsed_abs} | [{paper_id_full}]({paper_url}) | "
         )
-        md_row += f"**[link]({repo_url})**|\n" if repo_url != "null" else "null|\n"
+        md_row += f"**[code]({repo_url})** |\n" if repo_url != "null" else "null |\n"
 
         content[paper_id] = md_row
 
     return {topic: content}
 
 
-
+def make_collapsible(text: str, title: str = "查看摘要") -> str:
+    """
+    用 <details>/<summary> 包一段文本，方便在表格里折叠显示
+    """
+    # GitHub 会把单元格里的换行渲染成 <br>，保持可读
+    text = text.replace("|", "\\|")        # 避免 ‘|’ 撑破表格
+    return f"<details><summary>{title}</summary>{text}</details>"
 
 def update_json_file(filename, data_all):
     with open(filename, "r") as f:
