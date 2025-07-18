@@ -104,7 +104,7 @@ def get_daily_papers(topic, query, max_results=200):
             f"| **{update_time}** | **{paper_title}** | {paper_labels} | "
             f"{collapsed_abs} | [{paper_id_full}]({paper_url}) | "
         )
-        md_row += f"**[code]({repo_url})** |\n" if repo_url != "null" else "null |\n"
+        md_row += f"**[code]({repo_url})** |" if repo_url != "null" else "null |"
 
         content[paper_id] = md_row
 
