@@ -111,7 +111,7 @@ def get_daily_papers(topic, query, max_results=200):
     return {topic: content}
 
 
-def make_collapsible(text: str, title: str = "查看摘要") -> str:
+def make_collapsible(text: str, title: str = "Full Abstract") -> str:
     """
     用 <details>/<summary> 包一段文本，方便在表格里折叠显示
     """
@@ -119,29 +119,32 @@ def make_collapsible(text: str, title: str = "查看摘要") -> str:
     text = text.replace("|", "\\|")        # 避免 ‘|’ 撑破表格
     return f"<details><summary>{title}</summary>{text}</details>"
 
+def wrap_old_row(md_row: str) -> str:
+    if "<details" in md_row:
+        return md_row
+    cells = md_row.strip().split("|")
+    if len(cells) < 7:
+        return md_row
+    cells[4] = make_collapsible(cells[4].strip())
+    return "|".join(cells)
+
 def update_json_file(filename, data_all):
     with open(filename, "r") as f:
-        content = f.read()
-        if len(content.strip()) < 2:
-            m = {}
-        else:
-            m = json.loads(content)
+        content = f.read().strip()
+    json_data = json.loads(content) if content else {}
 
-    json_data = m.copy() # original articles
+    # ① 把旧行先补丁
+    for kw in json_data.values():
+        for pid in list(kw.keys()):
+            kw[pid] = wrap_old_row(kw[pid])
 
-    # update papers in each keywords         
+    # ② 再正常合并新抓到的数据
     for data in data_all:
-        for keyword in data.keys(): # one keyword 
-            papers = data[keyword]
+        for keyword, papers in data.items():
+            json_data.setdefault(keyword, {}).update(papers)
 
-            if keyword in json_data.keys(): # update
-                json_data[keyword].update(papers)
-            else:
-                json_data[keyword] = papers
-
-    with open(filename, "w") as f: # new file to save updated articles
-        json.dump(json_data, f, indent=2)
-
+    with open(filename, "w") as f:
+        json.dump(json_data, f, indent=2, ensure_ascii=False)
 
 def json_to_md(filename, md_filename,
                to_web=False,
