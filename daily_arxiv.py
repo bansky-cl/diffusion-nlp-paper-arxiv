@@ -3,10 +3,18 @@ import requests
 import json
 import arxiv
 import os
+from arxiv import UnexpectedEmptyPageError
+
 
 base_url = "https://arxiv.paperswithcode.com/api/v0/papers/"
 github_url = "https://api.github.com/search/repositories"
 arxiv_url = "http://arxiv.org/"
+
+BASE_URL = "https://arxiv.paperswithcode.com/api/v0/papers/"
+
+# 想保留的主类 & 想屏蔽的类
+KEEP   = "cs.CL"
+BLOCKS = {"cs.CV", "eess.AS", "cs.SD", "eess.SP", "q-bio.BM"}
 
 
 def get_authors(authors, first_author=False):
@@ -36,84 +44,62 @@ def sort_papers(papers):
     return output
 
 
-def get_daily_papers(topic, query, max_results=2):
+def get_daily_papers(topic, query, max_results=200):
     """
-    @param topic: str
-    @param query: str
-    @return paper_with_code: dict
+    抓取 arXiv + PapersWithCode 信息并按 markdown 表格行返回
     """
+    content: dict[str, str] = {}
 
-    # output 
-    content = dict()
-    # content_to_web = dict()
+    # 1. arxiv 客户端（新版推荐写法）
+    client = arxiv.Client(
+        page_size=100,     # 每页 100 条
+        delay_seconds=3,   # 尊重 API 速率
+        num_retries=5      # 同一页最多重试 5 次
+    )
 
-    # content
-    output = dict()
-
-    search_engine = arxiv.Search(
+    search = arxiv.Search(
         query=query,
         max_results=max_results,
         sort_by=arxiv.SortCriterion.SubmittedDate
     )
 
-    cnt = 0
+    # 2. 逐条遍历结果
+    for res in client.results(search):
 
-    for result in search_engine.results():
+        cats = res.categories                 # e.g. ['cs.CL', 'cs.LG']
+        if (KEEP not in cats) or any(c in cats for c in BLOCKS):
+            continue                          # 不符合过滤条件
 
-        # 这里加个判断 作为过滤
+        # ---- 基本字段 ----
+        paper_id_full  = res.get_short_id()   # 2407.12345v1
+        paper_id       = paper_id_full.split("v")[0]  # 去掉版本号
+        update_time    = res.updated.date()
+        paper_title    = res.title
+        paper_url      = res.entry_id
+        paper_abstract = res.summary.replace("\n", " ")
+        paper_labels   = ", ".join(cats)
 
-        if 'cs.CL' not in result.categories or 'cs.CV' in result.categories or 'eess.AS' in result.categories or 'cs.SD' in result.categories or 'eess.SP' in result.categories or 'q-bio.BM' in result.categories:
-            continue
-
-        paper_id = result.get_short_id()
-        paper_title = result.title
-        paper_url = result.entry_id
-        # new 2
-
-        paper_categories = get_label(result.categories)  # 标签列表
-        paper_primary_category = result.primary_category  # 主分类
-
-        code_url = base_url + paper_id
-        paper_abstract = result.summary.replace("\n", " ")  # 这个要用上
-        # paper_authors = get_authors(result.authors)  # 作者列表
-        # paper_first_author = paper_authors  # get_authors(result.authors,first_author = True) # 一作
-        primary_category = result.primary_category
-        publish_time = result.published.date()
-        update_time = result.updated.date()  # 要更新日期
-        comments = result.comment
-
-        print("Time = ", update_time,
-              " title = ", paper_title,
-              # " author = ", paper_first_author
-              "abstract =", paper_abstract,
-              "categories =", paper_categories
-              )
-
-        # eg: 2108.09112v1 -> 2108.09112
-        ver_pos = paper_id.find('v')
-        if ver_pos == -1:
-            paper_key = paper_id
-        else:
-            paper_key = paper_id[0:ver_pos]
-
+        # ---- PapersWithCode 源码链接 ----
+        repo_url = "null"
         try:
-            r = requests.get(code_url).json()
-            # source code link
-            if "official" in r and r["official"]:
-                cnt += 1
+            r = requests.get(BASE_URL + paper_id_full, timeout=10).json()
+            if r.get("official"):
                 repo_url = r["official"]["url"]
-                # 这里修改 paper_first_author to paper_abstract
-                content[
-                    paper_key] = f"|**{update_time}**|**{paper_title}**|{paper_categories}|{paper_abstract} |[{paper_id}]({paper_url})|**[link]({repo_url})**|\n"
-            else:
-                content[
-                    paper_key] = f"|**{update_time}**|**{paper_title}**|{paper_categories}|{paper_abstract} |[{paper_id}]({paper_url})|null|\n"
-
         except Exception as e:
-            print(f"exception: {e} with id: {paper_key}")
+            print(f"PwC lookup failed for {paper_id_full}: {e}")
 
-    data = {topic: content} # return crwal articles
-    return data
+        # ---- 拼 markdown 行 ----
+        md_row = (
+            f"|**{update_time}**|**{paper_title}**|{paper_labels}|"
+            f"{paper_abstract}|[{paper_id_full}]({paper_url})|"
+        )
+        md_row += f"**[link]({repo_url})**|\n" if repo_url != "null" else "null|\n"
+
+        content[paper_id] = md_row
+
+    return {topic: content}
+
+
 
 
 def update_json_file(filename, data_all):
