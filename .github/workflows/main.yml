@@ -43,6 +43,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install arxiv
           pip install requests
+          pip install matplotlib
           
       - name: Run daily arxiv 
         run: |
@@ -53,7 +54,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "Github Action Automatic Update Diffusion NLP Arxiv Papers"
-          files: README.md docs/arxiv-daily.json
+          files: README.md docs/arxiv-daily.json imgs/trend.png
           rebase: 'true'
           name: ${{ env.GITHUB_USER_NAME }}
           email: ${{ env.GITHUB_USER_EMAIL }}

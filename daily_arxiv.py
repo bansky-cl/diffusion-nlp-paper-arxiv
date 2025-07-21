@@ -4,6 +4,12 @@ import json
 import arxiv
 import os
 from arxiv import UnexpectedEmptyPageError
+import matplotlib.pyplot as plt
+from pathlib import Path
+from collections import Counter, defaultdict
+from datetime import datetime
+
+
 
 
 base_url = "https://arxiv.paperswithcode.com/api/v0/papers/"
@@ -12,7 +18,6 @@ arxiv_url = "http://arxiv.org/"
 
 BASE_URL = "https://arxiv.paperswithcode.com/api/v0/papers/"
 
-# 想保留的主类 & 想屏蔽的类
 KEEP   = "cs.CL"
 BLOCKS = {"cs.CV", "eess.AS", "cs.SD", "eess.SP", "q-bio.BM"}
 
@@ -28,7 +33,7 @@ def get_authors(authors, first_author=False):
 
 def get_label(categories):
     output = str()
-    if len(categories) != 1:  # 多类
+    if len(categories) != 1:  
         output = ", ".join(str(c) for c in categories)
     else:
         output = categories[0]
@@ -60,11 +65,11 @@ def get_daily_papers(topic, query, max_results=200):
     """
     content: dict[str, str] = {}
 
-    # 1. arxiv 客户端（新版推荐写法）
+    # 1. arxiv client
     client = arxiv.Client(
-        page_size=100,     # 每页 100 条
-        delay_seconds=3,   # 尊重 API 速率
-        num_retries=5      # 同一页最多重试 5 次
+        page_size=100,    
+        delay_seconds=3,  
+        num_retries=5    
     )
 
     search = arxiv.Search(
@@ -73,24 +78,22 @@ def get_daily_papers(topic, query, max_results=200):
         sort_by=arxiv.SortCriterion.SubmittedDate
     )
 
-    # 2. 逐条遍历结果
+    # 2. iter_results
     for res in iter_results_safe(client, search):
 
         cats = res.categories                 # e.g. ['cs.CL', 'cs.LG']
         if (KEEP not in cats) or any(c in cats for c in BLOCKS):
-            continue                          # 不符合过滤条件
+            continue                        
 
-        # ---- 基本字段 ----
-        paper_id_full  = res.get_short_id()   # 2407.12345v1
-        paper_id       = paper_id_full.split("v")[0]  # 去掉版本号
+        paper_id_full  = res.get_short_id()  
+        paper_id       = paper_id_full.split("v")[0]  
         update_time    = res.updated.date()
         paper_title    = res.title
         paper_url      = res.entry_id
         paper_abstract = res.summary.replace("\n", " ")
-        collapsed_abs = make_collapsible(paper_abstract)       # ← 折叠后的摘要
+        collapsed_abs = make_collapsible(paper_abstract)      
         paper_labels   = ", ".join(cats)
 
-        # ---- PapersWithCode 源码链接 ----
         repo_url = "null"
         try:
             r = requests.get(BASE_URL + paper_id_full, timeout=10).json()
@@ -99,12 +102,11 @@ def get_daily_papers(topic, query, max_results=200):
         except Exception as e:
             print(f"PwC lookup failed for {paper_id_full}: {e}")
 
-        # ---- 拼 markdown 行 ----
         md_row = (
-            f"| **{update_time}** | **{paper_title}** | {paper_labels} | "
-            f"{collapsed_abs} | [{paper_id_full}]({paper_url}) | "
+            f"|**{update_time}**|**{paper_title}**|{paper_labels}| "
+            f"{collapsed_abs}|[{paper_id_full}]({paper_url})| "
         )
-        md_row += f"**[code]({repo_url})** |" if repo_url != "null" else "null |"
+        md_row += f"**[code]({repo_url})**|" if repo_url != "null" else "null|"
 
         content[paper_id] = md_row
 
@@ -112,31 +114,21 @@ def get_daily_papers(topic, query, max_results=200):
 
 
 def make_collapsible(text: str, title: str = "Full Abstract") -> str:
-    """
-    用 <details>/<summary> 包一段文本，方便在表格里折叠显示
-    """
-    # GitHub 会把单元格里的换行渲染成 <br>，保持可读
-    text = text.replace("|", "\\|")        # 避免 ‘|’ 撑破表格
+    text = text.replace("|", "\\|")      
     return f"<details><summary>{title}</summary>{text}</details>"
 
 def wrap_old_row(md_row: str) -> str:
-    # 已经有 <details> 就跳过
     if "<details" in md_row:
         return md_row
 
-    # 记录行尾是否带 '\n'
     newline = "\n" if md_row.endswith("\n") else ""
-    row = md_row.rstrip("\n")  # 去掉行尾换行再处理
-
-    # 用 split 保留首尾空串：'' , Date , Title , ... , ''  (共 7+2 节点)
+    row = md_row.rstrip("\n")  
     cells = row.split("|")
-    if len(cells) < 8:         # 不够 8 说明行格式本身就异常
+    if len(cells) < 8:         
         return md_row
 
-    # 第 4 格 = 摘要
     cells[4] = make_collapsible(cells[4].strip())
 
-    # 重新组装，记得把首尾空格、换行补回去
     return "|".join(cells) + newline
 
 def update_json_file(filename, data_all):
@@ -144,12 +136,10 @@ def update_json_file(filename, data_all):
         content = f.read().strip()
     json_data = json.loads(content) if content else {}
 
-    # ① 把旧行先补丁
     for kw in json_data.values():
         for pid in list(kw.keys()):
             kw[pid] = wrap_old_row(kw[pid])
 
-    # ② 再正常合并新抓到的数据
     for data in data_all:
         for keyword, papers in data.items():
             json_data.setdefault(keyword, {}).update(papers)
@@ -203,6 +193,8 @@ def json_to_md(filename, md_filename,
         else:
             f.write("> Updated on " + DateNow + "\n\n")
 
+        f.write("![Monthly Trend](imgs/trend.png)\n\n")
+
         for keyword in data.keys():
             day_content = data[keyword]
             if not day_content:
@@ -220,13 +212,9 @@ def json_to_md(filename, md_filename,
             # sort papers by date
             day_content = sort_papers(day_content)
 
-            # for _, v in day_content.items():
-            #     if v is not None:
-            #         f.write(v)
             for _, v in day_content.items():
-                if not v:          # 跳过空值
+                if not v:       
                     continue
-                # 去掉可能已有的行尾换行，再补一个
                 f.write(v.rstrip("\n") + "\n")
 
             f.write(f"\n")
@@ -253,6 +241,71 @@ def json_to_md(filename, md_filename,
 
     print("finished")
 
+def json_to_trend(json_file: str | Path, img_file: str | Path) -> None:
+    json_file = Path(json_file).expanduser().resolve()
+    img_file  = Path(img_file).expanduser().resolve()
+
+    with json_file.open("r", encoding="utf‑8") as f:
+        data = json.load(f)
+
+    counts = Counter()
+    for topic_dict in data.values():
+        for arxiv_id in topic_dict.keys():
+            yymm = arxiv_id[:4]
+            year  = 2000 + int(yymm[:2])
+            month = int(yymm[2:])
+            ym_key = f"{year:04d}-{month:02d}"
+            counts[ym_key] += 1
+
+    if not counts:
+        print("no data")
+        return
+
+    ym_dates = {datetime.strptime(k, "%Y-%m"): k for k in counts}
+    sorted_keys = [ym_dates[d] for d in sorted(ym_dates)]
+    values = [counts[k] for k in sorted_keys]
+    idx_map = {k: i for i, k in enumerate(sorted_keys)}
+
+    year_tot, year_months = defaultdict(int), defaultdict(int)
+    for k, v in counts.items():
+        y = k[:4]
+        year_tot[y]   += v
+        year_months[y] += 1
+    year_avg = {y: year_tot[y] / year_months[y] for y in year_tot}
+
+    year_span = defaultdict(list)
+    for k in sorted_keys:
+        year_span[k[:4]].append(idx_map[k])
+
+    plt.figure(figsize=(9, 4))
+    plt.plot(sorted_keys, values, marker="o", linewidth=1, label="Monthly count")
+
+    first_bar = True
+    for y, avg in year_avg.items():
+        xs = year_span[y]
+        xmin, xmax = min(xs), max(xs)
+        bar_x = (xmin + xmax) / 2
+        bar_w = (xmax - xmin + 1) * 0.8    
+        plt.bar(bar_x, avg,
+                width=bar_w,
+                color="C1",
+                alpha=0.2,
+                label=f"Anual avg" if first_bar else None)
+        first_bar = False 
+
+    plt.title("ArXiv Papers per Month")
+    # plt.xlabel("Month")
+    plt.ylabel("Count")
+    plt.grid(True, linestyle="--", alpha=0.6)
+    plt.xticks(rotation=45, ha="right")
+    plt.legend()
+
+    img_file.parent.mkdir(parents=True, exist_ok=True)
+    plt.tight_layout()
+    plt.savefig(img_file, dpi=300)
+    plt.close()
+    print(f"✅ trend save in: {img_file}")
+
 
 if __name__ == "__main__":
 
@@ -263,20 +316,17 @@ if __name__ == "__main__":
     keywords["diffusion"] = "ti:\"diffusion\""  + "OR" + "ti:\" diffus\""
 
     for topic, keyword in keywords.items():
-        # topic = keyword.replace("\"","")
         print("Keyword: " + topic)
 
-        # data 就是md格式
-        # web 就是json格式
-        # 这里调用 搜索函数，返回一个topic或者一个keyword符合条件的所有函数
         data = get_daily_papers(topic, query=keyword, max_results=200)
         data_collector.append(data)
-        # data_collector_web.append(data_web) # no use
 
         print("\n")
 
     json_file = "docs/arxiv-daily.json"
+    img_file = "imgs/trend.png"
     md_file = "README.md"
 
     update_json_file(json_file, data_collector)
+    json_to_trend(json_file, img_file)
     json_to_md(json_file, md_file)
