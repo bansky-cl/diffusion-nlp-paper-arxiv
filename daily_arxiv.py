@@ -7,7 +7,7 @@ from arxiv import UnexpectedEmptyPageError
 import matplotlib.pyplot as plt
 from pathlib import Path
 from collections import Counter, defaultdict
-from datetime import datetime
+from datetime import dt
 
 
 
@@ -261,7 +261,7 @@ def json_to_trend(json_file: str | Path, img_file: str | Path) -> None:
         print("no data")
         return
 
-    ym_dates = {datetime.strptime(k, "%Y-%m"): k for k in counts}
+    ym_dates = {dt.strptime(k, "%Y-%m"): k for k in counts}
     sorted_keys = [ym_dates[d] for d in sorted(ym_dates)]
     values = [counts[k] for k in sorted_keys]
     idx_map = {k: i for i, k in enumerate(sorted_keys)}
