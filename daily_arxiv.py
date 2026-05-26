@@ -33,7 +33,7 @@ def get_authors(authors, first_author=False):
 
 def get_label(categories):
     output = str()
-    if len(categories) != 1:  
+    if len(categories) != 1:
         output = ", ".join(str(c) for c in categories)
     else:
         output = categories[0]
@@ -56,6 +56,9 @@ def iter_results_safe(client, search):
         except UnexpectedEmptyPageError as e:
             print(f"[arXiv] empty page, stop paging: {e}")
             break
+        except arxiv.HTTPError as e:
+            print(f"[arXiv] HTTP error after retries, stop this run: {e}")
+            break
         except StopIteration:
             break
 
@@ -67,9 +70,9 @@ def get_daily_papers(topic, query, max_results=200):
 
     # 1. arxiv client
     client = arxiv.Client(
-        page_size=100,    
-        delay_seconds=3,  
-        num_retries=5    
+        page_size=100,
+        delay_seconds=3,
+        num_retries=5
     )
 
     search = arxiv.Search(
@@ -83,15 +86,15 @@ def get_daily_papers(topic, query, max_results=200):
 
         cats = res.categories                 # e.g. ['cs.CL', 'cs.LG']
         if (KEEP not in cats) or any(c in cats for c in BLOCKS):
-            continue                        
+            continue
 
-        paper_id_full  = res.get_short_id()  
-        paper_id       = paper_id_full.split("v")[0]  
+        paper_id_full  = res.get_short_id()
+        paper_id       = paper_id_full.split("v")[0]
         update_time    = res.updated.date()
         paper_title    = res.title
         paper_url      = res.entry_id
         paper_abstract = res.summary.replace("\n", " ")
-        collapsed_abs = make_collapsible(paper_abstract)      
+        collapsed_abs = make_collapsible(paper_abstract)
         paper_labels   = ", ".join(cats)
 
         repo_url = "null"
@@ -114,7 +117,7 @@ def get_daily_papers(topic, query, max_results=200):
 
 
 def make_collapsible(text: str, title: str = "Full Abstract") -> str:
-    text = text.replace("|", "\\|")      
+    text = text.replace("|", "\\|")
     return f"<details><summary>{title}</summary>{text}</details>"
 
 def wrap_old_row(md_row: str) -> str:
@@ -122,9 +125,9 @@ def wrap_old_row(md_row: str) -> str:
         return md_row
 
     newline = "\n" if md_row.endswith("\n") else ""
-    row = md_row.rstrip("\n")  
+    row = md_row.rstrip("\n")
     cells = row.split("|")
-    if len(cells) < 8:         
+    if len(cells) < 8:
         return md_row
 
     cells[4] = make_collapsible(cells[4].strip())
@@ -151,7 +154,8 @@ def json_to_md(filename, md_filename,
                to_web=False,
                use_title=True,
                use_tc=True,
-               show_badge=True):
+               show_badge=True,
+               max_papers=100):
     """
     @param filename: str
     @param md_filename: str
@@ -212,10 +216,14 @@ def json_to_md(filename, md_filename,
             # sort papers by date
             day_content = sort_papers(day_content)
 
+            shown = 0
             for _, v in day_content.items():
-                if not v:       
+                if not v:
                     continue
+                if max_papers is not None and shown >= max_papers:
+                    break
                 f.write(v.rstrip("\n") + "\n")
+                shown += 1
 
             f.write(f"\n")
 
@@ -285,13 +293,13 @@ def json_to_trend(json_file: str | Path, img_file: str | Path) -> None:
         xs = year_span[y]
         xmin, xmax = min(xs), max(xs)
         bar_x = (xmin + xmax) / 2
-        bar_w = (xmax - xmin + 1) * 0.8    
+        bar_w = (xmax - xmin + 1) * 0.8
         plt.bar(bar_x, avg,
                 width=bar_w,
                 color="C1",
                 alpha=0.2,
                 label=f"Anual avg" if first_bar else None)
-        first_bar = False 
+        first_bar = False
 
     plt.title("ArXiv Papers per Month")
     # plt.xlabel("Month")

@@ -18,6 +18,7 @@ env:
 
   GITHUB_USER_NAME: bansky-cl
   GITHUB_USER_EMAIL: cxy1365@163.com
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   
   
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -27,14 +28,16 @@ jobs:
     name: update
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         
       - name: Set up Python Env
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v6
         with:
           python-version: 3.10.20
 
@@ -49,12 +52,15 @@ jobs:
         run: |
           python daily_arxiv.py
           
-      - name: Push new nlp-arxiv-daily.md
-        uses: github-actions-x/commit@v2.9
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "Github Action Automatic Update Diffusion NLP Arxiv Papers"
-          files: README.md docs/arxiv-daily.json imgs/trend.png
-          rebase: 'true'
-          name: ${{ env.GITHUB_USER_NAME }}
-          email: ${{ env.GITHUB_USER_EMAIL }}
+      - name: Commit and push updates
+        run: |
+          git config user.name "${GITHUB_USER_NAME}"
+          git config user.email "${GITHUB_USER_EMAIL}"
+          git add README.md docs/arxiv-daily.json imgs/trend.png
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "Github Action Automatic Update Diffusion NLP Arxiv Papers"
+          git pull --rebase
+          git push
