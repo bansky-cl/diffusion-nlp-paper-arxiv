@@ -51,7 +51,7 @@ jobs:
       - name: Run daily arxiv 
         run: |
           python daily_arxiv.py
-          
+
       - name: Commit and push updates
         run: |
           git config user.name "${GITHUB_USER_NAME}"
