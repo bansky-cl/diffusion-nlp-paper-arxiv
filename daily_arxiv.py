@@ -3,6 +3,7 @@ import requests
 import json
 import arxiv
 import os
+import time
 from arxiv import UnexpectedEmptyPageError
 import matplotlib.pyplot as plt
 from pathlib import Path
@@ -20,6 +21,13 @@ BASE_URL = "https://arxiv.paperswithcode.com/api/v0/papers/"
 
 KEEP   = "cs.CL"
 BLOCKS = {"cs.CV", "eess.AS", "cs.SD", "eess.SP", "q-bio.BM"}
+
+ARXIV_PAGE_SIZE = 50
+ARXIV_DELAY_SECONDS = 10
+ARXIV_NUM_RETRIES = 8
+ARXIV_RUN_RETRIES = 3
+ARXIV_BACKOFF_SECONDS = 60
+ARXIV_RETRYABLE_STATUS = {429, 500, 502, 503, 504}
 
 
 def get_authors(authors, first_author=False):
@@ -48,19 +56,39 @@ def sort_papers(papers):
         output[key] = papers[key]
     return output
 
-def iter_results_safe(client, search):
-    gen = client.results(search)
-    while True:
-        try:
-            yield next(gen)
-        except UnexpectedEmptyPageError as e:
-            print(f"[arXiv] empty page, stop paging: {e}")
-            break
-        except arxiv.HTTPError as e:
-            print(f"[arXiv] HTTP error after retries, stop this run: {e}")
-            break
-        except StopIteration:
-            break
+def iter_results_safe(client, search, run_retries=ARXIV_RUN_RETRIES):
+    seen_ids = set()
+
+    for attempt in range(1, run_retries + 1):
+        gen = client.results(search)
+        while True:
+            try:
+                res = next(gen)
+            except StopIteration:
+                return
+            except UnexpectedEmptyPageError as e:
+                print(f"[arXiv] empty page, stop paging: {e}")
+                return
+            except arxiv.HTTPError as e:
+                retryable = getattr(e, "status", None) in ARXIV_RETRYABLE_STATUS
+                if retryable and attempt < run_retries:
+                    sleep_seconds = ARXIV_BACKOFF_SECONDS * attempt
+                    print(
+                        "[arXiv] transient HTTP error after package retries "
+                        f"(attempt {attempt}/{run_retries}): {e}; "
+                        f"sleep {sleep_seconds}s and retry search"
+                    )
+                    time.sleep(sleep_seconds)
+                    break
+
+                print(f"[arXiv] HTTP error after retries, stop this keyword: {e}")
+                return
+
+            result_key = getattr(res, "entry_id", None) or res.get_short_id()
+            if result_key in seen_ids:
+                continue
+            seen_ids.add(result_key)
+            yield res
 
 def get_daily_papers(topic, query, max_results=200):
     """
@@ -70,9 +98,9 @@ def get_daily_papers(topic, query, max_results=200):
 
     # 1. arxiv client
     client = arxiv.Client(
-        page_size=100,
-        delay_seconds=3,
-        num_retries=5
+        page_size=ARXIV_PAGE_SIZE,
+        delay_seconds=ARXIV_DELAY_SECONDS,
+        num_retries=ARXIV_NUM_RETRIES
     )
 
     search = arxiv.Search(
