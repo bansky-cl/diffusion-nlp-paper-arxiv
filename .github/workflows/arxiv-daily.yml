@@ -5,8 +5,9 @@ name: Arxiv Daily Update
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
   schedule:
-    # - cron:  "* 0/12 * * *"  #'*/60 * * * *'
-    - cron: '0 8,22 * * *'
+    # GitHub cron uses UTC. Run at 08:15 and 22:15 Asia/Shanghai.
+    # Avoid minute 0 because scheduled jobs are more likely to be delayed or dropped.
+    - cron: '15 0,14 * * *'
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
     branches:
@@ -20,7 +21,12 @@ env:
 
   GITHUB_USER_NAME: bansky-cl
   GITHUB_USER_EMAIL: cxy1365@163.com
+  TZ: Asia/Shanghai
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+concurrency:
+  group: arxiv-daily-${{ github.ref }}
+  cancel-in-progress: true
   
   
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
