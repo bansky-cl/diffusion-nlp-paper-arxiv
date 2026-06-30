@@ -5,7 +5,7 @@
 
 For more carefully curated articles, you can refer to this [repository](https://github.com/bansky-cl/Diffusion_NLP_Papers).
 
-## Updated on 2026.06.30
+## Updated on 2026.07.01
 
 ![Monthly Trend](imgs/trend.png)
 
@@ -114,7 +114,7 @@ For more carefully curated articles, you can refer to this [repository](https://
 |**2026-04-18**|**Stability-Weighted Decoding for Diffusion Language Models**|cs.CL, cs.LG| <details><summary>Full Abstract</summary>Diffusion large language models (dLLMs) enable parallel text generation by iteratively denoising a fully masked sequence, unmasking a subset of masked tokens at each step. Existing decoding strategies rely on static confidence metrics computed at a single denoising step, ignoring temporal history and often leading to premature unmasking of unstable tokens. In this work, we theoretically establish that a token's temporal instability, quantified by the KL divergence between consecutive prediction distributions, provides a strict lower bound on its mutual information with the remaining masked context, indicating that temporally unstable tokens are inherently unsafe to unmask. Based on this insight, we propose Stability-Weighted Decoding (SWD), a training-free, plug-and-play strategy that incorporates temporal stability into token scoring and acts as a universal modulator for arbitrary score-based decoding policies. Experiments on code generation and mathematical reasoning benchmarks demonstrate that SWD consistently improves generation accuracy across representative scoring metrics and selection policies, and exhibits exceptional robustness, maintaining a significant performance lead over standard baselines across varying acceleration ratios.</details>|[2604.17068v1](http://arxiv.org/abs/2604.17068v1)| null|
 |**2026-04-29**|**Diffusion Language Models for Speech Recognition**|cs.CL, cs.AI, cs.LG, cs.NE| <details><summary>Full Abstract</summary>Diffusion language models have recently emerged as a leading alternative to standard language models, due to their ability for bidirectional attention and parallel text generation. In this work, we explore variants for their use in speech recognition. Specifically, we introduce a comprehensive guide to incorporating masked diffusion language models (MDLM) and uniform-state diffusion models (USDMs) for rescoring ASR hypotheses. Additionally, we design a new joint-decoding method that combines CTC and USDM by integrating the framewise probability distributions derived from CTC with the labelwise probability distributions computed by USDM at each decoding step, thereby generating new candidates that combine strong language knowledge from USDM and acoustic information from CTC. Our findings reveal that USDM, as well as MDLM, can significantly improve the accuracy of recognized text. We publish all our code and recipes.</details>|[2604.14001v2](http://arxiv.org/abs/2604.14001v2)| null|
 
-<p align=right>(<a href=#Updated-on-20260630>back to top</a>)</p>
+<p align=right>(<a href=#Updated-on-20260701>back to top</a>)</p>
 
 [contributors-shield]: https://img.shields.io/github/contributors/bansky-cl/diffusion-nlp-paper-arxiv.svg?style=for-the-badge
 [contributors-url]: https://github.com/bansky-cl/diffusion-nlp-paper-arxiv/graphs/contributors
