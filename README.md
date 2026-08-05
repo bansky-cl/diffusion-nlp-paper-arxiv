@@ -5,7 +5,7 @@
 
 For more carefully curated articles, you can refer to this [repository](https://github.com/bansky-cl/Diffusion_NLP_Papers).
 
-## Updated on 2026.08.05
+## Updated on 2026.08.06
 
 ![Monthly Trend](imgs/trend.png)
 
@@ -114,7 +114,7 @@ For more carefully curated articles, you can refer to this [repository](https://
 |**2026-05-14**|**Factorization-Error-Free Discrete Diffusion Language Model via Speculative Decoding**|cs.CL| <details><summary>Full Abstract</summary>Discrete diffusion language models improve generation efficiency through parallel token prediction, but standard $X_0$ prediction methods introduce factorization errors by approximating the clean token posterior with independent token-wise distributions. This paper proposes Factorization-Error-Free Discrete Diffusion Language Modeling (FeF-DLLM), which replaces independent clean-token prediction with an exact prefix-conditioned factorization of the clean posterior to better preserve token dependencies. To reduce the sequential cost introduced by prefix conditioning, FeF-DLLM further incorporates speculative decoding within diffusion denoising, accelerating inference while maintaining the parallel prediction and re-masking properties of DLLMs. Theoretically, we prove that FeF-DLLM generates from the true joint distribution and derive its expected acceleration ratio. Experiments on GSM8K, MATH, HumanEval, and MBPP demonstrate that our method improves accuracy by an average of 5.04 percentage points while achieving an average inference speedup of $3.86\times$.</details>|[2605.14305v1](http://arxiv.org/abs/2605.14305v1)| null|
 |**2026-05-13**|**Beyond Mode-Seeking RL: Trajectory-Balance Post-Training for Diffusion Language Models**|cs.LG, cs.CL| <details><summary>Full Abstract</summary>Diffusion language models are a promising alternative to autoregressive models, yet post-training methods for them largely adapt reward-maximizing objectives. We identify a central failure mode in this setting we call trajectory locking: sampled reward-driven updates over-concentrate probability mass onto a narrow set of denoising paths, reducing coverage of alternative correct solutions under repeated sampling. To address this, we propose TraFL (Trajectory Flow baLancing), a trajectory-balance objective that trains the policy toward a reward-tilted target distribution anchored to a frozen reference model. We make this practical for diffusion language models with a diffusion-compatible sequence-level surrogate and a learned prompt-dependent normalization. Across mathematical reasoning and code generation benchmarks, TraFL is the only evaluated post-training method that improves over the base model in every benchmark-length setting, with gains that persist as the sampling budget increases. The improvements transfer to held-out evaluations: TraFL stays above the base model on Minerva Math and is the strongest method on every LiveCodeBench difficulty split.</details>|[2605.13935v1](http://arxiv.org/abs/2605.13935v1)| null|
 
-<p align=right>(<a href=#Updated-on-20260805>back to top</a>)</p>
+<p align=right>(<a href=#Updated-on-20260806>back to top</a>)</p>
 
 [contributors-shield]: https://img.shields.io/github/contributors/bansky-cl/diffusion-nlp-paper-arxiv.svg?style=for-the-badge
 [contributors-url]: https://github.com/bansky-cl/diffusion-nlp-paper-arxiv/graphs/contributors
