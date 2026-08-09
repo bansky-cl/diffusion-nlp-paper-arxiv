@@ -5,7 +5,7 @@
 
 For more carefully curated articles, you can refer to this [repository](https://github.com/bansky-cl/Diffusion_NLP_Papers).
 
-## Updated on 2026.08.08
+## Updated on 2026.08.09
 
 ![Monthly Trend](imgs/trend.png)
 
@@ -114,7 +114,7 @@ For more carefully curated articles, you can refer to this [repository](https://
 |**2026-05-14**|**Where Should Diffusion Enter a Language Model? Geometry-Guided Hidden-State Replacement**|cs.CL, cs.AI| <details><summary>Full Abstract</summary>Continuous diffusion language models lag behind autoregressive transformers, partly because diffusion is applied in spaces poorly suited to language denoising and token recovery. We propose DiHAL, a geometry-guided diffusion-transformer hybrid that asks where diffusion should enter a pretrained transformer. DiHAL scores layers with geometry-based proxies, selects a diffusion-friendly hidden-state interface, and replaces the lower transformer prefix with a diffusion bridge while retaining the upper layers and original LM head. By reconstructing the selected-layer hidden state rather than tokens, DiHAL avoids direct continuous-to-discrete recovery. Experiments on 8B-scale backbones show that the geometry score predicts effective shallow insertion layers under a fixed bridge-training protocol and that hidden-state recovery improves over continuous diffusion baselines in a diagnostic comparison matching the diffusion/recovery training budget. These results suggest that hidden-state geometry helps identify where diffusion-based replacement is feasible inside pretrained language models.</details>|[2605.14368v1](http://arxiv.org/abs/2605.14368v1)| null|
 |**2026-05-14**|**Factorization-Error-Free Discrete Diffusion Language Model via Speculative Decoding**|cs.CL| <details><summary>Full Abstract</summary>Discrete diffusion language models improve generation efficiency through parallel token prediction, but standard $X_0$ prediction methods introduce factorization errors by approximating the clean token posterior with independent token-wise distributions. This paper proposes Factorization-Error-Free Discrete Diffusion Language Modeling (FeF-DLLM), which replaces independent clean-token prediction with an exact prefix-conditioned factorization of the clean posterior to better preserve token dependencies. To reduce the sequential cost introduced by prefix conditioning, FeF-DLLM further incorporates speculative decoding within diffusion denoising, accelerating inference while maintaining the parallel prediction and re-masking properties of DLLMs. Theoretically, we prove that FeF-DLLM generates from the true joint distribution and derive its expected acceleration ratio. Experiments on GSM8K, MATH, HumanEval, and MBPP demonstrate that our method improves accuracy by an average of 5.04 percentage points while achieving an average inference speedup of $3.86\times$.</details>|[2605.14305v1](http://arxiv.org/abs/2605.14305v1)| null|
 
-<p align=right>(<a href=#Updated-on-20260808>back to top</a>)</p>
+<p align=right>(<a href=#Updated-on-20260809>back to top</a>)</p>
 
 [contributors-shield]: https://img.shields.io/github/contributors/bansky-cl/diffusion-nlp-paper-arxiv.svg?style=for-the-badge
 [contributors-url]: https://github.com/bansky-cl/diffusion-nlp-paper-arxiv/graphs/contributors
