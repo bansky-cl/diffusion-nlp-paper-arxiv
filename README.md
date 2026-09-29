@@ -5,7 +5,7 @@
 
 For more carefully curated articles, you can refer to this [repository](https://github.com/bansky-cl/Diffusion_NLP_Papers).
 
-## Updated on 2026.09.29
+## Updated on 2026.09.30
 
 ![Monthly Trend](imgs/trend.png)
 
@@ -114,7 +114,7 @@ For more carefully curated articles, you can refer to this [repository](https://
 |**2026-06-17**|**Sumi: Open Uniform Diffusion Language Model from Scratch**|cs.CL, cs.LG| <details><summary>Full Abstract</summary>Diffusion models have become a promising alternative to autoregressive models. Among these, uniform diffusion language models (UDLMs) permit any token to be updated at any step, in principle enabling more flexible generation. However, no UDLM has yet been pretrained from scratch at both large parameter scale and large token budget. Both autoregressive modeling and masked diffusion modeling already have capable models at scale that the community can study and build on; uniform diffusion has none. A scratch-pretrained UDLM at scale would provide a clean reference point for studying scaling behavior, generation dynamics, controllability, and trade-offs against established autoregressive and masked diffusion models. To this end, we introduce Sumi ("ink" in Japanese), a fully open 7B uniform diffusion language model pretrained from scratch on 1.5T tokens. Sumi performs competitively with autoregressive models trained at comparable token budgets on knowledge, reasoning, and coding benchmarks, while under-performing on commonsense benchmarks, where our education-heavy data mixture is a likely contributor. We release our model weights, checkpoints, and full training recipe, including a complete specification of the data mixture over publicly available corpora. We hope this release enables the community to study native uniform diffusion at scale and catalyzes work on its as-yet poorly understood aspects.</details>|[2606.19005v1](http://arxiv.org/abs/2606.19005v1)| null|
 |**2026-06-24**|**Approximate Structured Diffusion for Sequence Labelling**|cs.CL, cs.LG| <details><summary>Full Abstract</summary>Sequence labelling, a core task of Natural Language Processing (NLP), consists in assigning each token of an input sentence a label.   From a Machine Learning point of view, sequence labelling is often cast as a Linear-Chain Conditional Random Field (CRF) parametrised by a neural network.   While this approach gives good empirical results, CRFs assume a finite decision span (eg label bigrams) which can limit their expressivity and hurt performance when long-range dependencies are required.   We show we can leverage diffusion to train a CRF conditioned on an entire label sequence, with the caveat that the condition is on a noisy version of labels.   We show experimentally that this method, in conjunction with approximate CRF inference, improves label accuracy with a 16.5% error reduction for POS-tagging.</details>|[2606.18856v2](http://arxiv.org/abs/2606.18856v2)| null|
 
-<p align=right>(<a href=#Updated-on-20260929>back to top</a>)</p>
+<p align=right>(<a href=#Updated-on-20260930>back to top</a>)</p>
 
 [contributors-shield]: https://img.shields.io/github/contributors/bansky-cl/diffusion-nlp-paper-arxiv.svg?style=for-the-badge
 [contributors-url]: https://github.com/bansky-cl/diffusion-nlp-paper-arxiv/graphs/contributors
