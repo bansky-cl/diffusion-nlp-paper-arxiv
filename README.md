@@ -5,7 +5,7 @@
 
 For more carefully curated articles, you can refer to this [repository](https://github.com/bansky-cl/Diffusion_NLP_Papers).
 
-## Updated on 2026.10.27
+## Updated on 2026.10.28
 
 ![Monthly Trend](imgs/trend.png)
 
@@ -114,7 +114,7 @@ For more carefully curated articles, you can refer to this [repository](https://
 |**2026-09-07**|**In-Place Instruction Following in Diffusion Language Models**|cs.CL, cs.AI| <details><summary>Full Abstract</summary>Diffusion Large Language Models (dLLMs) generate text via bidirectional iterative denoising, naturally supporting user-specified constraints anchored at arbitrary output positions, a paradigm known as In-place Prompting (IPP). We formalize this as the In-place Instruction Following (IIF) task and construct IIF-Bench, a hierarchical benchmark spanning literal, style, and discourse-function constraints, paired with a rubric-based local-global evaluation protocol. An inference-time attention-bias probe suggests that vanilla dLLMs often under-prioritize constraint spans during denoising. We then propose GRAFT, an IPP-oriented post-training framework combining constraint-aware SFT and preference optimization. On four representative dLLMs, GRAFT raises the average IIF score from 57.75 to 73.10 (+15.35 points), with absolute gains of 15.91 and 15.57 points on literal and discourse-function constraints, while preserving general generation ability.</details>|[2609.07160v1](http://arxiv.org/abs/2609.07160v1)| null|
 |**2026-09-06**|**DFlow: Enabling Verifier Information Flow in Block Diffusion Speculative Decoding**|cs.CL| <details><summary>Full Abstract</summary>Block diffusion speculative decoding improves LLM inference efficiency by proposing a block of future tokens in parallel and verifying them with a single forward pass through the target model. However, existing methods retain only the accepted prefix and discard the rejected suffix, preventing the computation spent on these positions from benefiting subsequent drafting rounds and forcing the drafter to repeatedly reconstruct representations for future tokens from scratch. We observe that rejection only determines whether a proposed token can be committed, while the verifier representations at rejected positions can still provide useful information for subsequent predictions. Based on this observation, we propose DFlow, a simple yet effective framework that enables verifier information to flow across drafting rounds. DFlow reuses the hidden states produced by the target verifier for the rejected suffix to guide subsequent drafting without additional target computation. To effectively learn this information flow across drafting rounds, we introduce a self-condition train strategy that feeds verifier representations from earlier predictions back into subsequent predictions. Experiments on Qwen3 models across diverse benchmarks demonstrate that DFlow consistently improves draft quality and acceptance length over DFlash.</details>|[2609.06498v1](http://arxiv.org/abs/2609.06498v1)| null|
 
-<p align=right>(<a href=#Updated-on-20261027>back to top</a>)</p>
+<p align=right>(<a href=#Updated-on-20261028>back to top</a>)</p>
 
 [contributors-shield]: https://img.shields.io/github/contributors/bansky-cl/diffusion-nlp-paper-arxiv.svg?style=for-the-badge
 [contributors-url]: https://github.com/bansky-cl/diffusion-nlp-paper-arxiv/graphs/contributors
